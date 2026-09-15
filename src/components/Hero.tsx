@@ -1,11 +1,13 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, Mail, Github, Linkedin, Sparkles, Terminal, Code2, Database } from 'lucide-react';
+import { ArrowRight, Mail, Github, Linkedin, MessageSquare, Terminal, Copy, Check, Sparkles } from 'lucide-react';
 import { PERSONAL_INFO } from '@/data/portfolio-data';
 
 export default function Hero() {
+  const [copied, setCopied] = useState(false);
+
   const scrollTo = (targetId: string) => {
     const el = document.getElementById(targetId);
     if (el) {
@@ -16,98 +18,119 @@ export default function Hero() {
     }
   };
 
+  const copyEmail = () => {
+    navigator.clipboard.writeText(PERSONAL_INFO.email);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
     <section
       id="home"
-      className="relative min-h-[92vh] flex items-center justify-center pt-28 pb-16 px-4 sm:px-6 z-10"
+      className="relative min-h-[88vh] flex items-center justify-center pt-28 pb-16 px-4 sm:px-6 z-10"
     >
-      <div className="max-w-4xl mx-auto text-center flex flex-col items-center">
-        {/* Availability Badge */}
+      <div className="max-w-3xl mx-auto text-center flex flex-col items-center">
+        {/* Status Pill Badge */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900/90 border border-white/10 text-xs font-medium text-zinc-300 mb-6 backdrop-blur-md shadow-sm"
+        >
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+          </span>
+          <span>{PERSONAL_INFO.availability}</span>
+          <span className="text-zinc-600">•</span>
+          <span className="text-zinc-400 font-mono text-[11px]">POLINDRA</span>
+        </motion.div>
+
+        {/* Name & Headline */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-slate-800/80 border border-cyan-500/30 text-xs sm:text-sm font-medium text-slate-300 mb-8 backdrop-blur-md shadow-lg shadow-cyan-950/30"
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="space-y-3"
         >
-          <span className="relative flex h-2.5 w-2.5">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
-          </span>
-          <span className="text-slate-200">{PERSONAL_INFO.availability}</span>
-          <span className="text-cyan-400 font-mono text-xs hidden sm:inline">• Open to Collaborate</span>
-        </motion.div>
-
-        {/* Main Title & Gradient Headline */}
-        <motion.div
-          initial={{ opacity: 0, y: 25 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="space-y-4"
-        >
-          <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-white leading-[1.15]">
-            Halo, Saya{' '}
-            <span className="text-gradient-cyan-violet">
-              {PERSONAL_INFO.name}
-            </span>
+          <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-white leading-[1.1]">
+            Muhammad <span className="text-gradient-cyan">Reza Fadillah</span>
           </h1>
 
-          <div className="flex items-center justify-center gap-2 text-lg sm:text-2xl font-semibold text-slate-300">
-            <Terminal className="w-5 h-5 sm:w-6 sm:h-6 text-cyan-400 inline-block" />
-            <span className="text-cyan-300">{PERSONAL_INFO.role}</span>
-          </div>
+          <p className="text-base sm:text-xl font-medium text-zinc-300 flex items-center justify-center gap-2">
+            <Terminal className="w-4 h-4 text-cyan-400" />
+            <span>Smart City & Web Developer | Creative Technologist</span>
+          </p>
         </motion.div>
 
-        {/* Short Bio Tagline */}
+        {/* Short Clean Bio */}
         <motion.p
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="mt-6 text-base sm:text-xl text-slate-400 max-w-2xl leading-relaxed"
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="mt-5 text-sm sm:text-base text-zinc-400 max-w-xl leading-relaxed"
         >
-          {PERSONAL_INFO.tagline} Berfokus pada pengembangan arsitektur cloud, performa tinggi, dan pengalaman antarmuka modern yang memikat.
+          Mahasiswa D4 Sistem Informasi Kota Cerdas di <strong>Politeknik Negeri Indramayu (IPK 3.91)</strong>. Berfokus pada perancangan aplikasi web (Laravel & Next.js), integrasi sistem IoT, dan media kreatif.
         </motion.p>
 
-        {/* CTA Buttons */}
+        {/* CTAs */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="mt-10 flex flex-wrap items-center justify-center gap-4 w-full sm:w-auto"
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="mt-8 flex flex-wrap items-center justify-center gap-3 w-full sm:w-auto"
         >
-          {/* Primary CTA: Lihat Proyek */}
+          {/* Primary CTA */}
           <button
             onClick={() => scrollTo('projects')}
-            className="group relative inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-xl font-semibold text-sm text-white bg-gradient-to-r from-cyan-500 via-blue-600 to-violet-600 hover:from-cyan-400 hover:to-violet-500 shadow-xl shadow-cyan-500/25 hover:shadow-cyan-500/40 transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] w-full sm:w-auto"
+            className="group inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full font-semibold text-xs sm:text-sm text-zinc-950 bg-white hover:bg-zinc-200 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] w-full sm:w-auto shadow-sm"
           >
-            <span>Lihat Proyek Unggulan</span>
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            <span>Lihat Karya & Proyek</span>
+            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
           </button>
 
-          {/* Secondary CTA: Hubungi Saya */}
+          {/* Secondary CTA */}
           <button
             onClick={() => scrollTo('contact')}
-            className="inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-xl font-semibold text-sm text-slate-200 bg-slate-900/90 hover:bg-slate-800/90 border border-slate-700/80 hover:border-cyan-500/50 backdrop-blur-md transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] w-full sm:w-auto shadow-md"
+            className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full font-semibold text-xs sm:text-sm text-zinc-200 bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] w-full sm:w-auto"
           >
-            <Mail className="w-4 h-4 text-cyan-400" />
+            <MessageSquare className="w-3.5 h-3.5 text-cyan-400" />
             <span>Hubungi Saya</span>
+          </button>
+
+          {/* Interactive Copy Email */}
+          <button
+            onClick={copyEmail}
+            className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-full text-xs font-mono text-zinc-400 hover:text-white bg-zinc-950/60 hover:bg-zinc-900 border border-white/5 hover:border-white/10 transition-all active:scale-95"
+          >
+            {copied ? (
+              <>
+                <Check className="w-3 h-3 text-emerald-400" />
+                <span className="text-emerald-400">Email Tersalin!</span>
+              </>
+            ) : (
+              <>
+                <Copy className="w-3 h-3 text-zinc-500" />
+                <span>mreza.fadhilah88@gmail.com</span>
+              </>
+            )}
           </button>
         </motion.div>
 
-        {/* Quick Social Links & Tech Badges */}
+        {/* Social Icons & Quick Tech Pills */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-6 pt-6 border-t border-slate-800/60 w-full max-w-xl"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="mt-12 flex flex-wrap items-center justify-center gap-4 text-xs text-zinc-500 font-mono"
         >
-          <div className="flex items-center gap-4 text-slate-400">
-            <span className="text-xs uppercase tracking-wider font-mono text-slate-500">Connect:</span>
+          <div className="flex items-center gap-2">
             <a
               href={PERSONAL_INFO.socialLinks.github}
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="GitHub Profile"
-              className="p-2.5 rounded-xl bg-slate-800/50 hover:bg-slate-800 border border-slate-700/60 hover:border-cyan-500/50 text-slate-300 hover:text-cyan-400 transition-all hover:scale-110"
+              aria-label="GitHub"
+              className="p-2 rounded-full bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-white border border-zinc-800 transition-colors"
             >
               <Github className="w-4 h-4" />
             </a>
@@ -115,32 +138,37 @@ export default function Hero() {
               href={PERSONAL_INFO.socialLinks.linkedin}
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="LinkedIn Profile"
-              className="p-2.5 rounded-xl bg-slate-800/50 hover:bg-slate-800 border border-slate-700/60 hover:border-blue-500/50 text-slate-300 hover:text-blue-400 transition-all hover:scale-110"
+              aria-label="LinkedIn"
+              className="p-2 rounded-full bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-cyan-400 border border-zinc-800 transition-colors"
             >
               <Linkedin className="w-4 h-4" />
             </a>
             <a
-              href={PERSONAL_INFO.socialLinks.email}
-              aria-label="Email Me"
-              className="p-2.5 rounded-xl bg-slate-800/50 hover:bg-slate-800 border border-slate-700/60 hover:border-violet-500/50 text-slate-300 hover:text-violet-400 transition-all hover:scale-110"
+              href={PERSONAL_INFO.socialLinks.whatsapp}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="WhatsApp"
+              className="p-2 rounded-full bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-emerald-400 border border-zinc-800 transition-colors"
             >
               <Mail className="w-4 h-4" />
             </a>
           </div>
 
-          <div className="hidden sm:block h-4 w-px bg-slate-800" />
+          <span className="hidden sm:inline text-zinc-800">|</span>
 
-          {/* Quick Tech Highlights */}
-          <div className="flex items-center gap-2 text-xs font-mono text-slate-400">
-            <span className="px-2.5 py-1 rounded-md bg-slate-800/60 border border-slate-700/40 text-cyan-300">
+          {/* Tech stack highlights */}
+          <div className="flex items-center gap-1.5 flex-wrap justify-center">
+            <span className="px-2.5 py-0.5 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-300 text-[11px]">
+              Laravel (PHP)
+            </span>
+            <span className="px-2.5 py-0.5 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-300 text-[11px]">
               Next.js
             </span>
-            <span className="px-2.5 py-1 rounded-md bg-slate-800/60 border border-slate-700/40 text-blue-300">
-              TypeScript
+            <span className="px-2.5 py-0.5 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-300 text-[11px]">
+              IoT ESP32
             </span>
-            <span className="px-2.5 py-1 rounded-md bg-slate-800/60 border border-slate-700/40 text-emerald-300">
-              Supabase
+            <span className="px-2.5 py-0.5 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-300 text-[11px]">
+              Tailwind CSS
             </span>
           </div>
         </motion.div>

@@ -11,9 +11,11 @@ import {
   Linkedin,
   MapPin,
   Clock,
-  Sparkles,
-  PhoneCall,
+  Phone,
+  MessageCircle,
   Loader2,
+  Copy,
+  Check,
 } from 'lucide-react';
 import { PERSONAL_INFO } from '@/data/portfolio-data';
 
@@ -34,6 +36,7 @@ const INITIAL_FORM: FormState = {
 export default function Contact() {
   const [formData, setFormData] = useState<FormState>(INITIAL_FORM);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [copiedEmail, setCopiedEmail] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<{
     type: 'idle' | 'success' | 'error';
     message: string;
@@ -52,15 +55,20 @@ export default function Contact() {
     }));
   };
 
+  const copyEmail = () => {
+    navigator.clipboard.writeText(PERSONAL_INFO.email);
+    setCopiedEmail(true);
+    setTimeout(() => setCopiedEmail(false), 2000);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitStatus({ type: 'idle', message: '' });
 
-    // Client-side quick checks
     if (!formData.name.trim() || formData.name.trim().length < 2) {
       setSubmitStatus({
         type: 'error',
-        message: 'Mohon isi nama lengkap Anda (minimal 2 karakter).',
+        message: 'Mohon masukkan nama Anda (minimal 2 karakter).',
       });
       return;
     }
@@ -76,7 +84,7 @@ export default function Contact() {
     if (!formData.message.trim() || formData.message.trim().length < 10) {
       setSubmitStatus({
         type: 'error',
-        message: 'Mohon tuliskan pesan Anda minimal 10 karakter.',
+        message: 'Pesan terlalu singkat (minimal 10 karakter).',
       });
       return;
     }
@@ -86,9 +94,7 @@ export default function Contact() {
     try {
       const res = await fetch('/api/contact', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
 
@@ -97,21 +103,20 @@ export default function Contact() {
       if (res.ok && data.success) {
         setSubmitStatus({
           type: 'success',
-          message: data.message || 'Pesan Anda berhasil dikirim!',
+          message: data.message || 'Pesan Anda berhasil dikirim ke database!',
           isDemo: data.demoMode,
         });
         setFormData(INITIAL_FORM);
       } else {
         setSubmitStatus({
           type: 'error',
-          message: data.error || 'Terjadi kendala saat mengirim pesan. Silakan coba lagi.',
+          message: data.error || 'Gagal mengirim pesan. Silakan coba lagi.',
         });
       }
     } catch (err: any) {
-      console.error('Contact submission error:', err);
       setSubmitStatus({
         type: 'error',
-        message: 'Gagal terhubung ke server. Periksa koneksi internet Anda atau hubungi lewat email langsung.',
+        message: 'Gagal terhubung ke server database.',
       });
     } finally {
       setIsSubmitting(false);
@@ -119,151 +124,148 @@ export default function Contact() {
   };
 
   return (
-    <section id="contact" className="relative py-24 px-4 sm:px-6 z-10">
-      <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="text-center space-y-3 mb-16">
+    <section id="contact" className="relative py-20 px-4 sm:px-6 z-10">
+      <div className="max-w-5xl mx-auto">
+        {/* Section Header */}
+        <div className="text-center space-y-2 mb-12">
           <motion.div
-            initial={{ opacity: 0, y: 15 }}
+            initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-xs font-semibold text-cyan-400 font-mono"
+            transition={{ duration: 0.4 }}
+            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-900 border border-white/10 text-[11px] font-mono font-medium text-cyan-400"
           >
-            <Mail className="w-3.5 h-3.5" />
-            <span>HUBUNGI SAYA</span>
+            <Mail className="w-3 h-3" />
+            <span>HUBUNGI REZA</span>
           </motion.div>
 
           <motion.h2
-            initial={{ opacity: 0, y: 15 }}
+            initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight"
+            transition={{ duration: 0.4, delay: 0.1 }}
+            className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight"
           >
-            Mari Memulai Kolaborasi atau Diskusi Proyek
+            Mulai Diskusi atau Kolaborasi Proyek
           </motion.h2>
 
           <motion.p
-            initial={{ opacity: 0, y: 15 }}
+            initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-slate-400 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed"
+            transition={{ duration: 0.4, delay: 0.15 }}
+            className="text-zinc-400 max-w-xl mx-auto text-xs sm:text-sm leading-relaxed"
           >
-            Punya ide proyek, tawaran pekerjaan, atau sekadar ingin bertukar pikiran seputar software development? Silakan kirimkan pesan Anda di bawah ini.
+            Punya kebutuhan sistem informasi, pengembangan web Laravel/Next.js, atau proyek multimedia? Kirim pesan langsung di bawah ini.
           </motion.p>
         </div>
 
         {/* Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-          {/* Left Column: Direct Info & Socials */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* Left Column: Direct Info Cards */}
           <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="lg:col-span-5 space-y-6"
+            transition={{ duration: 0.4 }}
+            className="lg:col-span-5 space-y-3"
           >
-            <div className="glass-card p-6 sm:p-8 rounded-3xl space-y-6">
-              <h3 className="text-xl font-bold text-white mb-2">
-                Informasi Kontak Langsung
+            {/* Quick Contact Card */}
+            <div className="modern-card p-6 rounded-2xl space-y-4">
+              <h3 className="text-base font-bold text-white">
+                Kontak Langsung
               </h3>
-              <p className="text-sm text-slate-400 leading-relaxed">
-                Pesan dari form ini akan langsung tersimpan ke cloud database (Supabase) secara aman. Anda juga dapat menghubungi saya secara instan melalui saluran berikut:
-              </p>
 
-              <div className="space-y-4 pt-2">
+              <div className="space-y-2.5">
                 {/* Email Item */}
-                <a
-                  href={PERSONAL_INFO.socialLinks.email}
-                  className="flex items-center gap-4 p-3.5 rounded-2xl bg-slate-800/40 hover:bg-slate-800/80 border border-slate-700/50 hover:border-cyan-500/50 transition-all group"
-                >
-                  <div className="p-3 rounded-xl bg-cyan-500/10 text-cyan-400 group-hover:scale-110 transition-transform">
-                    <Mail className="w-5 h-5" />
+                <div className="flex items-center justify-between p-3 rounded-xl bg-zinc-900/60 border border-white/5">
+                  <div className="flex items-center gap-3">
+                    <Mail className="w-4 h-4 text-cyan-400" />
+                    <div>
+                      <div className="text-[10px] font-mono text-zinc-500">Email</div>
+                      <div className="text-xs font-semibold text-zinc-200">
+                        {PERSONAL_INFO.email}
+                      </div>
+                    </div>
                   </div>
+                  <button
+                    onClick={copyEmail}
+                    className="p-1.5 rounded-lg text-zinc-400 hover:text-white bg-zinc-800 hover:bg-zinc-700 transition-colors text-xs"
+                    title="Salin Email"
+                  >
+                    {copiedEmail ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                  </button>
+                </div>
+
+                {/* WhatsApp Item */}
+                <a
+                  href={PERSONAL_INFO.socialLinks.whatsapp}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 p-3 rounded-xl bg-zinc-900/60 hover:bg-zinc-800/80 border border-white/5 hover:border-emerald-500/30 transition-all group"
+                >
+                  <MessageCircle className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform" />
                   <div>
-                    <div className="text-xs font-mono text-slate-400">Email Utama</div>
-                    <div className="text-sm font-semibold text-white group-hover:text-cyan-300 transition-colors">
-                      {PERSONAL_INFO.email}
+                    <div className="text-[10px] font-mono text-zinc-500">WhatsApp / Telepon</div>
+                    <div className="text-xs font-semibold text-zinc-200 group-hover:text-emerald-300 transition-colors">
+                      {PERSONAL_INFO.phone}
                     </div>
                   </div>
                 </a>
 
                 {/* Location Item */}
-                <div className="flex items-center gap-4 p-3.5 rounded-2xl bg-slate-800/40 border border-slate-700/50">
-                  <div className="p-3 rounded-xl bg-violet-500/10 text-violet-400">
-                    <MapPin className="w-5 h-5" />
-                  </div>
+                <div className="flex items-center gap-3 p-3 rounded-xl bg-zinc-900/60 border border-white/5">
+                  <MapPin className="w-4 h-4 text-violet-400" />
                   <div>
-                    <div className="text-xs font-mono text-slate-400">Lokasi</div>
-                    <div className="text-sm font-semibold text-white">
-                      {PERSONAL_INFO.location} (Remote / On-site)
-                    </div>
-                  </div>
-                </div>
-
-                {/* Response Time Item */}
-                <div className="flex items-center gap-4 p-3.5 rounded-2xl bg-slate-800/40 border border-slate-700/50">
-                  <div className="p-3 rounded-xl bg-emerald-500/10 text-emerald-400">
-                    <Clock className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <div className="text-xs font-mono text-slate-400">Waktu Respon</div>
-                    <div className="text-sm font-semibold text-white">
-                      Dalam 24 Jam Kerja
+                    <div className="text-[10px] font-mono text-zinc-500">Domisili</div>
+                    <div className="text-xs font-semibold text-zinc-200">
+                      {PERSONAL_INFO.location}
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Social Channels */}
-              <div className="pt-4 border-t border-slate-800">
-                <div className="text-xs font-mono text-slate-400 mb-3">
-                  Profil Profesional & Repositori:
-                </div>
-                <div className="flex items-center gap-3">
-                  <a
-                    href={PERSONAL_INFO.socialLinks.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 text-xs font-medium transition-all hover:scale-105"
-                  >
-                    <Github className="w-4 h-4 text-cyan-400" />
-                    <span>GitHub</span>
-                  </a>
-                  <a
-                    href={PERSONAL_INFO.socialLinks.linkedin}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 text-xs font-medium transition-all hover:scale-105"
-                  >
-                    <Linkedin className="w-4 h-4 text-blue-400" />
-                    <span>LinkedIn</span>
-                  </a>
-                </div>
+              <div className="pt-3 border-t border-zinc-800/80 flex items-center gap-2">
+                <a
+                  href={PERSONAL_INFO.socialLinks.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white border border-white/5 text-xs transition-colors"
+                >
+                  <Github className="w-3.5 h-3.5" />
+                  <span>GitHub</span>
+                </a>
+                <a
+                  href={PERSONAL_INFO.socialLinks.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-cyan-400 border border-white/5 text-xs transition-colors"
+                >
+                  <Linkedin className="w-3.5 h-3.5" />
+                  <span>LinkedIn</span>
+                </a>
               </div>
             </div>
           </motion.div>
 
           {/* Right Column: Interactive Form */}
           <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
             className="lg:col-span-7"
           >
-            <div className="glass-card p-6 sm:p-8 rounded-3xl relative">
-              <form onSubmit={handleSubmit} className="space-y-5">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  {/* Name Input */}
+            <div className="modern-card p-6 sm:p-7 rounded-2xl">
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label
                       htmlFor="name"
-                      className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2 font-mono"
+                      className="block text-[11px] font-mono text-zinc-400 uppercase tracking-wider mb-1.5"
                     >
-                      Nama Lengkap <span className="text-cyan-400">*</span>
+                      Nama <span className="text-cyan-400">*</span>
                     </label>
                     <input
                       type="text"
@@ -271,19 +273,18 @@ export default function Contact() {
                       name="name"
                       value={formData.name}
                       onChange={handleChange}
-                      placeholder="Contoh: John Doe"
+                      placeholder="Nama lengkap Anda"
                       required
-                      className="w-full px-4 py-3 rounded-xl bg-slate-900/80 border border-slate-700/80 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 text-sm transition-colors"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-white placeholder-zinc-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 text-xs sm:text-sm transition-colors"
                     />
                   </div>
 
-                  {/* Email Input */}
                   <div>
                     <label
                       htmlFor="email"
-                      className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2 font-mono"
+                      className="block text-[11px] font-mono text-zinc-400 uppercase tracking-wider mb-1.5"
                     >
-                      Alamat Email <span className="text-cyan-400">*</span>
+                      Email <span className="text-cyan-400">*</span>
                     </label>
                     <input
                       type="email"
@@ -291,20 +292,19 @@ export default function Contact() {
                       name="email"
                       value={formData.email}
                       onChange={handleChange}
-                      placeholder="nama@email.com"
+                      placeholder="alamat@email.com"
                       required
-                      className="w-full px-4 py-3 rounded-xl bg-slate-900/80 border border-slate-700/80 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 text-sm transition-colors"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-white placeholder-zinc-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 text-xs sm:text-sm transition-colors"
                     />
                   </div>
                 </div>
 
-                {/* Subject Input */}
                 <div>
                   <label
                     htmlFor="subject"
-                    className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2 font-mono"
+                    className="block text-[11px] font-mono text-zinc-400 uppercase tracking-wider mb-1.5"
                   >
-                    Subjek / Topik Diskusi
+                    Subjek / Topik
                   </label>
                   <input
                     type="text"
@@ -312,72 +312,62 @@ export default function Contact() {
                     name="subject"
                     value={formData.subject}
                     onChange={handleChange}
-                    placeholder="Contoh: Tawaran Kolaborasi Proyek Web App"
-                    className="w-full px-4 py-3 rounded-xl bg-slate-900/80 border border-slate-700/80 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 text-sm transition-colors"
+                    placeholder="Contoh: Tawaran Kolaborasi Web / Proyek Multimedia"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-white placeholder-zinc-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 text-xs sm:text-sm transition-colors"
                   />
                 </div>
 
-                {/* Message Input */}
                 <div>
                   <label
                     htmlFor="message"
-                    className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2 font-mono"
+                    className="block text-[11px] font-mono text-zinc-400 uppercase tracking-wider mb-1.5"
                   >
-                    Pesan Anda <span className="text-cyan-400">*</span>
+                    Pesan <span className="text-cyan-400">*</span>
                   </label>
                   <textarea
                     id="message"
                     name="message"
-                    rows={5}
+                    rows={4}
                     value={formData.message}
                     onChange={handleChange}
-                    placeholder="Tuliskan detail pesan, kebutuhan proyek, atau pertanyaan Anda di sini..."
+                    placeholder="Tuliskan kebutuhan proyek atau pesan Anda..."
                     required
-                    className="w-full px-4 py-3 rounded-xl bg-slate-900/80 border border-slate-700/80 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 text-sm transition-colors resize-none"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-white placeholder-zinc-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 text-xs sm:text-sm transition-colors resize-none"
                   />
                 </div>
 
-                {/* Status Feedback Message */}
                 {submitStatus.type !== 'idle' && (
                   <motion.div
-                    initial={{ opacity: 0, y: -10 }}
+                    initial={{ opacity: 0, y: -5 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className={`p-4 rounded-xl text-sm flex items-start gap-3 ${
+                    className={`p-3 rounded-xl text-xs flex items-start gap-2.5 ${
                       submitStatus.type === 'success'
-                        ? 'bg-emerald-500/15 border border-emerald-500/30 text-emerald-300'
-                        : 'bg-red-500/15 border border-red-500/30 text-red-300'
+                        ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-300'
+                        : 'bg-red-500/10 border border-red-500/20 text-red-300'
                     }`}
                   >
                     {submitStatus.type === 'success' ? (
-                      <CheckCircle2 className="w-5 h-5 shrink-0 text-emerald-400 mt-0.5" />
+                      <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400 mt-0.5" />
                     ) : (
-                      <AlertCircle className="w-5 h-5 shrink-0 text-red-400 mt-0.5" />
+                      <AlertCircle className="w-4 h-4 shrink-0 text-red-400 mt-0.5" />
                     )}
-                    <div className="leading-relaxed">
-                      {submitStatus.message}
-                      {submitStatus.isDemo && (
-                        <div className="text-xs text-emerald-400/80 mt-1 font-mono">
-                          ℹ️ Hubungkan Supabase URL & Key pada file .env untuk penyimpanan permanen ke cloud database.
-                        </div>
-                      )}
-                    </div>
+                    <div className="leading-relaxed">{submitStatus.message}</div>
                   </motion.div>
                 )}
 
-                {/* Submit Button */}
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full py-3.5 px-6 rounded-xl font-semibold text-sm text-white bg-gradient-to-r from-cyan-500 via-blue-600 to-violet-600 hover:from-cyan-400 hover:to-violet-500 shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 transition-all duration-300 hover:scale-[1.01] active:scale-[0.99] disabled:opacity-60 disabled:pointer-events-none flex items-center justify-center gap-2"
+                  className="w-full py-2.5 px-5 rounded-xl font-semibold text-xs sm:text-sm text-zinc-950 bg-white hover:bg-zinc-200 shadow-sm transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] disabled:opacity-60 flex items-center justify-center gap-2"
                 >
                   {isSubmitting ? (
                     <>
-                      <Loader2 className="w-4 h-4 animate-spin text-white" />
-                      <span>Mengirim Pesan ke Database...</span>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>Menyimpan ke Database...</span>
                     </>
                   ) : (
                     <>
-                      <Send className="w-4 h-4" />
+                      <Send className="w-3.5 h-3.5" />
                       <span>Kirim Pesan Sekarang</span>
                     </>
                   )}
