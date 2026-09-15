@@ -26,7 +26,7 @@ export default function Projects() {
     PERSONAL_INFO.githubUsername || 'octocat'
   );
 
-  const loadProjects = async () => {
+  const loadProjects = React.useCallback(async () => {
     setIsLoading(true);
     try {
       const res = await fetch(`/api/github?username=${encodeURIComponent(githubUsername)}`);
@@ -46,11 +46,11 @@ export default function Projects() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [githubUsername]);
 
   useEffect(() => {
     loadProjects();
-  }, [githubUsername]);
+  }, [loadProjects]);
 
   const displayedProjects = projects.filter((project) => {
     if (filter === 'featured') return project.featured;
